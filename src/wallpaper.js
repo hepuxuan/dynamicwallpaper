@@ -52,8 +52,13 @@ function updateCountry(_country) {
   }));
 }
 
+function getZipcode() {
+  return zip;
+}
+
 module.exports = {
   setWallpaper,
   updateZipCode,
   updateCountry,
+  getZipcode,
 };

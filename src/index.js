@@ -1,9 +1,11 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron');
 const AutoLaunch = require('auto-launch');
+const path = require('path');
 const {
   setWallpaper,
   updateZipCode,
   updateCountry,
+  getZipcode,
 } = require('./wallpaper');
 
 
@@ -21,10 +23,30 @@ const init = () => {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    icon: path.join(__dirname, 'favicon.ico'),
   });
 
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
+
+  const appIcon = new Tray(path.join(__dirname, 'icon.png'));
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show App',
+      click: () => {
+        mainWindow.show();
+      },
+    }, {
+      label: 'Quit',
+      click: () => {
+        app.isQuiting = true;
+        app.quit();
+      },
+    },
+  ]);
+
+  appIcon.setContextMenu(contextMenu);
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
@@ -36,6 +58,19 @@ const init = () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  mainWindow.on('minimize', (event) => {
+    event.preventDefault();
+    mainWindow.hide();
+  });
+
+  mainWindow.on('show', () => {
+    appIcon.setHighlightMode('always');
+  });
+
+  if (getZipcode()) {
+    mainWindow.hide();
+  }
 
   setWallpaper();
 
