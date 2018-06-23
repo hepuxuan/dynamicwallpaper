@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+<main>
+  <form>
+    <div class="form-group">
+      <label for="zipcodeinput">Zip code</label>
+      <input type="email" class="form-control" id="zipcodeinput" placeholder="Enter zip code">
+    </div>
+    <div style="display: none" class="form-group">
+      <label for="countryinput">Country</label>
+      <input class="form-control" id="countryinput" placeholder="Enter Country">
+    </div>
+    <button id="submit-button" type="submit" class="btn btn-primary btn-block">Submit</button>
+  </form>
+</main>
+<script>
+  const {ipcRenderer, remote} = require('electron');
+  const countryinput = document.getElementById('countryinput');
+  const zipcodeinput = document.getElementById('zipcodeinput');
+
+  document.getElementById("submit-button").addEventListener('click', function () {
+    const country = countryinput.value;
+    const zip = zipcodeinput.value;
+
+    if (country) {
+      ipcRenderer.send('country-update', country);
+    }
+
+    if (zip) {
+      ipcRenderer.send('zipcode-update', zip);
+    }
+  });
+</script>
+</body>
+</html>
