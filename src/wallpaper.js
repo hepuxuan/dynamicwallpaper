@@ -27,10 +27,10 @@ async function setWallpaper() {
 
   const weatherCondition = weather.weather[0].main.toLowerCase();
 
-  const sunsetHour = new Date(weather.sys.sunset).getHours();
-  const sunriseHour = new Date(weather.sys.sunrise).getHours();
-  const hour = new Date().getHours();
-  const isDay = hour > sunriseHour && hour < sunsetHour;
+  const sunset = new Date(weather.sys.sunset * 1000).valueOf();
+  const sunrise = new Date(weather.sys.sunrise * 1000).valueOf();
+  const currentTime = new Date().valueOf();
+  const isDay = currentTime > sunrise && currentTime < sunset;
   const time = isDay ? 'day' : 'night';
 
   const file = await downloadPhoto(weather.name, weatherCondition, time);

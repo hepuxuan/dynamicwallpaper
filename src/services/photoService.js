@@ -14,6 +14,7 @@ const weatherMap = {
 };
 
 async function downloadPhoto(location, weather, time) {
+  console.log(time);
   const res = await fetch(`https://api.unsplash.com/search/photos/?query=${location}-${weatherMap[weather]}-${time}&client_id=${key}`);
   const results = (await res.json()).results;
 
