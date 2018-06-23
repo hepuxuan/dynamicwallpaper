@@ -11,23 +11,45 @@
   <form>
     <div class="form-group">
       <label for="zipcodeinput">Zip code</label>
-      <input type="email" class="form-control" id="zipcodeinput" placeholder="Enter zip code">
+      <input class="form-control" id="zipcodeinput" placeholder="Enter zip code">
     </div>
     <div style="display: none" class="form-group">
       <label for="countryinput">Country</label>
       <input class="form-control" id="countryinput" placeholder="Enter Country">
     </div>
-    <button id="submit-button" type="submit" class="btn btn-primary btn-block">Submit</button>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="autoboot-check">
+      <label class="form-check-label" for="autoboot-check">Open at boot</label>
+    </div>
+    <button id="submit-button" type="submit" class="btn btn-primary btn-block">Update</button>
   </form>
 </main>
 <script>
-  const {ipcRenderer, remote} = require('electron');
+  const { ipcRenderer, remote } = require('electron');
   const countryinput = document.getElementById('countryinput');
   const zipcodeinput = document.getElementById('zipcodeinput');
+  const autobootinput = document.getElementById('autoboot-check');
 
-  document.getElementById("submit-button").addEventListener('click', function () {
+  ipcRenderer.on('update-country', (event, arg) => {
+    countryinput.value = arg;
+  });
+
+  ipcRenderer.send('get-zipcode');
+  ipcRenderer.send('get-autoboot');
+
+  ipcRenderer.on('update-zipcode', (event, arg) => {
+    zipcodeinput.value = arg;
+  });
+
+  ipcRenderer.on('update-autoboot', (event, arg) => {
+    autobootinput.checked = arg;
+  });
+
+  document.getElementById("submit-button").addEventListener('click', function (e) {
+    e.preventDefault();
     const country = countryinput.value;
     const zip = zipcodeinput.value;
+    const autoBoot = autobootinput.checked;
 
     if (country) {
       ipcRenderer.send('country-update', country);
@@ -36,6 +58,8 @@
     if (zip) {
       ipcRenderer.send('zipcode-update', zip);
     }
+
+    ipcRenderer.send('update-autorun', autoBoot);
   });
 </script>
 </body>

@@ -3,11 +3,20 @@ const getWeather = require('./services/weatherService');
 const downloadPhoto = require('./services/photoService');
 const fs = require('fs');
 const path = require('path');
+const { ipcMain } = require('electron');
 
 const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'config.json')));
 
 let zip = config.zip;
 let country = config.country || 'us';
+
+ipcMain.on('get-zipcode', (event) => {
+  event.sender.send('update-zipcode', zip);
+});
+
+ipcMain.on('get-country', (event) => {
+  event.sender.send('update-country', country);
+});
 
 async function setWallpaper() {
   if (!zip || !country) {

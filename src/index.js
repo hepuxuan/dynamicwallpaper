@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const AutoLaunch = require('auto-launch');
 const {
   setWallpaper,
   updateZipCode,
@@ -67,7 +68,6 @@ ipcMain.on('zipcode-update', (event, arg) => {
   // Reply on async message from renderer process
   updateZipCode(arg);
   setWallpaper();
-
 });
 
 ipcMain.on('country-update', (event, arg) => {
@@ -78,3 +78,33 @@ ipcMain.on('country-update', (event, arg) => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+const autoLauncher = new AutoLaunch({
+  name: 'dynamicwallpaper',
+});
+
+ipcMain.on('get-autoboot', (event) => {
+  autoLauncher.isEnabled().then((isEnabled) => {
+    event.sender.send('update-autoboot', isEnabled);
+  });
+});
+
+
+ipcMain.on('update-autorun', (event, arg) => {
+  autoLauncher.isEnabled()
+    .then((isEnabled) => {
+      if (arg) {
+        if (isEnabled) {
+          return;
+        }
+        console.log('enable');
+        autoLauncher.enable();
+      } else {
+        if (!isEnabled) {
+          return;
+        }
+        console.log('disable');
+        autoLauncher.disable();
+      }
+    }).catch(() => {});
+});
